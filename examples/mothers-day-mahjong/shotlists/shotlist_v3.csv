@@ -1,0 +1,36 @@
+tl_in,tl_out,tl_len,role,tag,file,src_dur,src_in,src_out,label
+0.0,0.534,0.534,open,people,IMG_3491.MOV,0.467,0.0,0.467,Opening hero: Fia on mic (window light)
+0.534,3.204,2.67,open,mahjong,IMG_3558.MOV,8.002,2.666,5.336,Cold open: hero mahjong tile detail (dragon)
+3.204,4.807,1.603,build,mahjong,IMG_3479.mov,1.825,0.111,1.714,"Player seated (tile-arranging hands, steadier)"
+4.807,6.409,1.602,build,mahjong,IMG_3552.MOV,5.302,1.85,3.452,Tiles being placed / shuffled
+6.409,7.477,1.068,build,mahjong,IMG_3497.MOV,1.233,0.083,1.151,"Table establishing (sharp focus, yellow)"
+7.477,8.545,1.068,build,people,IMG_3475.MOV,12.802,5.867,6.935,Reaction
+8.545,9.079,0.534,hook1,mahjong,IMG_3545.MOV,4.867,2.167,2.701,Hook pop: tile slam
+9.079,9.613,0.534,hook1,people,IMG_3538.MOV,10.968,5.217,5.751,Hook pop: face
+9.613,10.147,0.534,hook1,mahjong,IMG_3519.MOV,4.067,1.767,2.301,Hook pop: hand placing
+10.147,10.681,0.534,hook1,people,IMG_3490.MOV,5.967,2.716,3.25,Hook pop: laugh
+10.681,11.215,0.534,hook1,mahjong,IMG_3531.MOV,4.0,1.733,2.267,Hook pop: tile detail
+11.215,11.749,0.534,hook1,mahjong,IMG_3517.JPG,999.0,0.0,0.534,FUN POP: 4 women pointing playfully (JPG freeze)
+11.749,12.817,1.068,mid,mahjong,IMG_3498.MOV,3.833,1.383,2.451,Mid hero: longer hold on play
+12.817,13.351,0.534,hook2,mahjong,IMG_3499.MOV,1.7,0.583,1.117,FUN POP: smiling woman at red rack
+13.351,13.886,0.535,hook2,mahjong,IMG_3555.MOV,3.633,1.549,2.084,Hook2: tiles
+13.886,14.42,0.534,hook2,people,IMG_3633.MOV,5.103,2.284,2.818,Hook2: face
+14.42,14.954,0.534,hook2,mahjong,IMG_3521.MOV,3.433,1.45,1.984,Hook2: hand
+14.954,15.488,0.534,hook2,mixed,IMG_3496.MOV,5.27,2.368,2.902,Hook2: tableau
+15.488,16.022,0.534,hook2,people,IMG_3537.MOV,4.5,1.983,2.517,Hook2: smile
+16.022,17.09,1.068,mid,mixed,IMG_3535.MOV,5.033,1.983,3.051,Hostess / wide context
+17.09,18.158,1.068,mid,mahjong,IMG_3520.MOV,3.0,0.966,2.034,Top-down shuffle hero
+18.158,18.692,0.534,hook3,people,IMG_3492.MOV,4.3,1.883,2.417,Final pop: reaction
+18.692,19.226,0.534,hook3,mahjong,IMG_3534.MOV,2.8,1.133,1.667,Final pop: tile
+19.226,19.76,0.534,hook3,people,IMG_3476.MOV,3.567,1.517,2.051,Final pop: laugh
+19.76,20.294,0.534,hook3,mahjong,IMG_3487.MOV,2.568,1.017,1.551,Final pop: play
+20.294,21.362,1.068,hook3,mixed,IMG_3495.MOV,4.037,1.484,2.552,Group action 2-beat
+21.362,22.431,1.069,mid,mahjong,IMG_3530.MOV,2.433,0.682,1.751,Hero detail hold
+22.431,22.965,0.534,close_b,people,IMG_3539.MOV,2.4,0.933,1.467,Close build: face
+22.965,23.499,0.534,close_b,mahjong,IMG_3556.MOV,2.367,0.916,1.45,Close build: tile
+23.499,24.033,0.534,close_b,people,IMG_3477.MOV,2.367,0.916,1.45,Close build: smile
+24.033,24.567,0.534,close_b,mahjong,IMG_3486.MOV,2.335,0.9,1.434,Close build: hand
+24.567,25.635,1.068,close_b,mixed,IMG_3627.MOV,3.833,1.383,2.451,Wider 2-beat
+25.635,26.703,1.068,close,mahjong,IMG_3488.MOV,1.968,0.45,1.518,Close 1: mahjong centerpiece + Fia's signage
+26.703,27.771,1.068,close,mahjong,IMG_3518.MOV,2.133,1.065,2.133,Close 2: IMG_3518 mahjong gesture (trimmed start)
+27.771,30.0,2.229,close,mahjong,IMG_3543.JPG,999.0,0.0,2.229,ENDING: portrait group hero (Ken Burns)

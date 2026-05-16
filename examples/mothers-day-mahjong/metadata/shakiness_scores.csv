@@ -1,0 +1,34 @@
+slot,file,tl_in,tl_len,src_in,mean_tx,mean_ty,mean_alpha,score,label
+28,IMG_3539.MOV,22.431,0.534,0.933,0,0,0,8.64,Close build: face
+10,IMG_3490.MOV,10.147,0.534,2.716,0,0,0,4.407,Hook pop: laugh
+27,IMG_3524.mov,21.362,1.069,0.266,0,0,0,4.341,"Hero detail hold (clean, non-shaky)"
+32,IMG_3627.MOV,24.567,1.068,1.383,0,0,0,4.326,Wider 2-beat
+6,IMG_3475.MOV,7.477,1.068,5.867,0,0,0,3.961,Reaction
+33,IMG_3478.MOV,25.635,1.068,0.016,0,0,0,2.924,Close 1: two players studying tiles up close
+29,IMG_3487.MOV,22.965,0.534,1.017,0,0,0,2.754,Close build: tile
+7,IMG_3552.MOV,8.545,0.534,2.384,0,0,0,2.435,Hook pop: tile slam
+20,IMG_3535.MOV,16.022,1.068,1.983,0,0,0,2.283,Hostess / wide context
+3,IMG_3479.mov,3.204,1.603,0.111,0,0,0,2.223,"Player seated (tile-arranging hands, steadier)"
+13,IMG_3531.MOV,11.749,1.068,1.466,0,0,0,2.12,Mid hero: longer hold on play
+34,IMG_3518.MOV,26.703,1.068,1.065,0,0,0,2.087,Close 2: brand card reveal (trimmed start)
+26,IMG_3495.MOV,20.294,1.068,1.484,0,0,0,2.012,Group action 2-beat
+5,IMG_3528.MOV,6.409,1.068,0.0,0,0,0,2.003,"Table establishing (clean, non-shaky)"
+30,IMG_3477.MOV,23.499,0.534,0.916,0,0,0,1.877,Close build: smile
+22,IMG_3492.MOV,18.158,0.534,1.883,0,0,0,1.865,Final pop: reaction
+23,IMG_3520.MOV,18.692,0.534,1.233,0,0,0,1.837,Final pop: tile
+11,IMG_3519.MOV,10.681,0.534,1.767,0,0,0,1.683,Hook pop: tile detail
+24,IMG_3476.MOV,19.226,0.534,1.517,0,0,0,1.478,Final pop: laugh
+21,IMG_3521.MOV,17.09,1.068,1.182,0,0,0,1.428,Top-down shuffle hero
+4,IMG_3558.MOV,4.807,1.602,3.2,0,0,0,1.207,Tiles being placed / shuffled
+15,IMG_3498.MOV,13.351,0.535,1.649,0,0,0,1.15,Hook2: tiles
+18,IMG_3496.MOV,14.954,0.534,2.368,0,0,0,1.141,Hook2: tableau
+2,IMG_3488.MOV,1.602,1.602,0.0,0,0,0,1.093,Wide mahjong table + Fia's signage
+14,IMG_3499.MOV,12.817,0.534,0.583,0,0,0,1.092,FUN POP: smiling woman at red rack
+16,IMG_3633.MOV,13.886,0.534,2.284,0,0,0,1.045,Hook2: face
+31,IMG_3530.MOV,24.033,0.534,0.949,0,0,0,0.965,Close build: hand
+25,IMG_3534.MOV,19.76,0.534,1.133,0,0,0,0.885,Final pop: play
+9,IMG_3545.MOV,9.613,0.534,2.167,0,0,0,0.823,Hook pop: hand placing
+17,IMG_3555.MOV,14.42,0.534,1.55,0,0,0,0.783,Hook2: hand
+8,IMG_3538.MOV,9.079,0.534,5.217,0,0,0,0.436,Hook pop: face
+0,IMG_3491.MOV,0.0,0.534,0.0,0,0,0,0.076,Opening hero: Fia on mic (window light)
+19,IMG_3537.MOV,15.488,0.534,1.983,0,0,0,0.009,Hook2: smile

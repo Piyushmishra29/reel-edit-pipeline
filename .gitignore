@@ -1,0 +1,49 @@
+# Source footage (private, never commit)
+*.MOV
+*.mov
+*.MP4
+*.mp4
+*.JPG
+*.jpg
+*.JPEG
+*.jpeg
+!examples/**/assets/*.png
+!examples/**/assets/*.jpg
+!docs/**/*.png
+!docs/**/*.jpg
+!docs/**/*.jpeg
+
+# Music (copyright)
+*.wav
+*.WAV
+*.mp3
+*.MP3
+*.m4a
+*.M4A
+*.aac
+
+# Renders
+05-renders/
+04-edit/tmp_slots/
+*_proxy.mp4
+*_reel.mp4
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.python-version
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Working state
+*.bak
+*.trf
