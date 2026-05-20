@@ -1,6 +1,14 @@
 # Fia's Mahjong Collection — VO-driven product launch reel
 
+<p align="center">
+  <img src="docs/screenshots/logo.png" width="180" alt="Mahjong @ Fia's Lounge"/>
+</p>
+
 <p align="center"><i>A 24-second vertical reel announcing the new Mahjong @ Fia's Lounge collection — premium tiles, velvet mats, smooth pushers, and beautifully crafted racks.</i></p>
+
+<p align="center">
+  <img src="docs/screenshots/gallery_6up.jpg" width="720" alt="Fia's Mahjong Collection reel — six-up gallery from v9"/>
+</p>
 
 <p align="center">
   <img alt="format" src="https://img.shields.io/badge/format-1080×1920-blue"/>
@@ -137,6 +145,45 @@ The script will fail loudly if any visual slot wants more footage than its sourc
 | Audio normalization | `ffmpeg loudnorm` (EBU R128) | -16 LUFS for Instagram/TikTok |
 | Audio ducking | `asplit` + `sidechaincompress` + `amix weights="1 8"` | Voice dominant, music ducked under |
 | Container | MP4 + `+faststart` moov atom | Progressive web playback |
+
+---
+
+## Output gallery — reel_v9.mp4
+
+| t=1.5s · HOOK | t=4.6s · REVEAL | t=7.5s · TILES |
+|:---:|:---:|:---:|
+| ![Hook host](docs/screenshots/01-hook.jpg) | ![Pagoda mat reveal](docs/screenshots/02-reveal.jpg) | ![Tile row detail](docs/screenshots/03-tiles.jpg) |
+| Host on IMG_3794 — "The most beautiful Mahjong setup is here" | Wide blue-pagoda mat | "Premium tiles" |
+
+| t=9.0s · MATS | t=10.5s · PUSHERS | t=13.0s · RACKS |
+|:---:|:---:|:---:|
+| ![Gold dragon mat](docs/screenshots/04-mats.jpg) | ![Pusher on pagoda](docs/screenshots/05-pushers.jpg) | ![3-colour rack showcase](docs/screenshots/06-racks.jpg) |
+| Gold dragon detail | Bamboo pusher | 3-colour rack hero |
+
+| t=16.5s · VALUE | t=19.5s · CTA | t=22.2s · WEBSITE |
+|:---:|:---:|:---:|
+| ![Host arms crossed](docs/screenshots/07-value.jpg) | ![Pagoda angled CTA](docs/screenshots/08-cta-pagoda.jpg) | ![mahjongatfias.in scroll](docs/screenshots/09-website-scroll.jpg) |
+| Host hero close | Pagoda angled CTA opener | Animated `mahjongatfias.in` scroll |
+
+| t=23.5s · END CARD |
+|:---:|
+| ![Logo end card](docs/screenshots/10-end-card.jpg) |
+| Mahjong @ Fia's Lounge brand fade |
+
+### Source contact sheet (34 video clips, manually tagged)
+
+![Contact sheet](docs/screenshots/contact_sheet.jpg)
+
+Tag distribution from `metadata/classification.csv`:
+
+| Tag | Count | Hero clips |
+|---|---|---|
+| `host` | 6 | IMG_3794 (used), IMG_3797 (reveal VO), IMG_3804 (value) |
+| `racks` | 12 | IMG_3830 (3-colour hero), IMG_3825, IMG_3809 |
+| `mats` | 3 | IMG_3819, IMG_3821, IMG_3822 |
+| `tiles` | 7 | IMG_3833, IMG_3834, IMG_3816 |
+| `setup` | 3 | IMG_3820, IMG_3823, IMG_3824 |
+| `detail` | 3 | IMG_3818 (gold dragon), IMG_3811, IMG_3812 |
 
 ---
 
