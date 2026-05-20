@@ -73,12 +73,14 @@ def caption_overlay_y(role):
 
 # -------- VO sequence: each entry = a sentence delivered by the host --------
 # (clip_file, src_in, src_out, line_label, line_text)
+# (clip, src_in, src_out, line_label, line_text, gap_after_secs)
+# gap_after is a brief silence appended after the sentence so the VO breathes naturally
 VO = [
-    ("IMG_3795.MOV", 5.97, 9.23,  "hook",     "The most beautiful mahjong set is finally here"),
-    ("IMG_3797.MOV", 0.93, 3.36,  "reveal",   "Introducing a new collection to Fia's Lounge"),
-    ("IMG_3800.MOV", 3.35, 10.97, "products", "premium tiles, velvet mats, smooth pushers, beautifully crafted racks"),
-    ("IMG_3804.MOV", 1.43, 5.72,  "value",    "Designed to bring elegance, style and comfort in every game"),
-    ("IMG_3807.MOV", 0.96, 4.49,  "cta",      "Visit our website to explore the full collection"),
+    ("IMG_3794.MOV", 1.78, 5.05,  "hook",     "The most beautiful mahjong set is finally here",                       0.40),
+    ("IMG_3797.MOV", 0.93, 3.36,  "reveal",   "Introducing a new collection to Fia's Lounge",                        0.40),
+    ("IMG_3800.MOV", 3.35, 10.97, "products", "premium tiles, velvet mats, smooth pushers, beautifully crafted racks", 0.40),
+    ("IMG_3804.MOV", 1.43, 5.72,  "value",    "Designed to bring elegance, style and comfort in every game",          0.40),
+    ("IMG_3807.MOV", 0.96, 4.49,  "cta",      "Visit our website to explore the full collection",                     0.00),
 ]
 
 # -------- Visual cut sequence --------
@@ -89,11 +91,13 @@ VO = [
 #   sub_dur    -- visual duration on the timeline
 # Sub-cuts within a single VO segment chain back-to-back (e.g. 4 product cuts under one VO).
 CUTS = [
-    # ===== HOOK (under VO #0, 3.26s) — show host =====
-    (0, 0.00, 3.26, "hook",    "IMG_3795.MOV", 5.97, "Host hero: 'The most beautiful mahjong set is finally here'"),
+    # ===== HOOK (under VO #0, 3.27s) — IMG_3794 lip-synced (visual src matches audio src) =====
+    (0, 0.00, 3.27, "hook",    "IMG_3794.MOV", 1.78, "Host IMG_3794 (synced to line, slate skipped)"),
 
-    # ===== REVEAL (under VO #1, 2.43s) — wide setup =====
-    (1, 0.00, 2.43, "reveal",  "IMG_3820.MOV", 0.0,  "Blue pagoda mat full setup wide"),
+    # ===== REVEAL (under VO #1, 2.43s + 0.4s breath) — wide setup =====
+    # IMG_3820 is only 2.5s, too short once we extend through the breath gap.
+    # IMG_3824 (7.17s) holds easily; CTA opener below uses a later src_in inside the same clip.
+    (1, 0.00, 2.43, "reveal",  "IMG_3824.MOV", 0.0,  "Blue pagoda angled — reveal (first window)"),
 
     # ===== PRODUCT BEATS (under VO #2 "products", 7.62s) — 4 cuts on real speech bursts =====
     # Within trimmed VO #2 (0 = source 3.35):
@@ -109,7 +113,7 @@ CUTS = [
     (3, 0.00, 4.29, "value",   "IMG_3804.MOV", 1.43, "Host: 'Designed to bring elegance, style and comfort in every game'"),
 
     # ===== CTA (under VO #4, 3.53s) — split: pagoda first, short site-scroll at the end =====
-    (4, 0.00, 1.90, "cta",     "IMG_3824.MOV",   0.0,  "Blue pagoda angled — CTA opener"),
+    (4, 0.00, 1.90, "cta",     "IMG_3824.MOV",   4.0,  "Blue pagoda angled — CTA opener (later window)"),
     (4, 1.90, 1.63, "cta",     "WEBSITE_SCROLL", 0.0,  "Short site scroll: mahjongatfias.in"),
 
     # ===== LOGO END CARD (post-VO, 1.5s) — silent fade =====
@@ -118,8 +122,9 @@ CUTS = [
 
 # -------- compute timeline --------
 def vo_dur(i):
-    f, s_in, s_out, *_ = VO[i]
-    return max(0.0, s_out - s_in)
+    """Audible portion + breathing gap appended after the line."""
+    f, s_in, s_out, _lab, _txt, gap = VO[i]
+    return max(0.0, s_out - s_in) + gap
 
 vo_starts = [0.0]
 for i in range(len(VO)):
@@ -129,14 +134,24 @@ vo_total = vo_starts[-1]
 # end-card sits after VO ends
 post_offset = vo_total
 
+# Find the last cut for each VO segment so we can extend it across that
+# segment's gap_after silence. Visuals hold while the audio breathes.
+last_cut_for_vo = {}
+for idx, cut in enumerate(CUTS):
+    vo_i = cut[0]
+    if vo_i is not None:
+        last_cut_for_vo[vo_i] = idx
+
 slots = []
-for cut in CUTS:
+for idx, cut in enumerate(CUTS):
     vo_i, sub_o, sub_d, role, ff, src_in, label = cut
     if vo_i is None:
         tl_in = post_offset
         post_offset += sub_d
     else:
         tl_in = vo_starts[vo_i] + sub_o
+        if last_cut_for_vo[vo_i] == idx:
+            sub_d += VO[vo_i][5]   # gap_after — hold visual through the breath
     tl_out = tl_in + sub_d
     slots.append(dict(
         tl_in=round(tl_in, 3), tl_out=round(tl_out, 3),
@@ -173,8 +188,8 @@ with open(EDIT/"shotlist.md", "w") as f:
         f.write(f"| {i} | {s['tl_in']:.2f} | {s['tl_out']:.2f} | {s['dur']:.2f} | {s['role']} | {s['file']} | {s['src_in']:.2f} | {s['label']} |\n")
     f.write("\n## VO bed\n\n")
     f.write("| # | Clip | src_in | src_out | Dur | Line |\n|---|---|---|---|---|---|\n")
-    for i, (clip, sin, sout, lab, txt) in enumerate(VO):
-        f.write(f"| {i} | {clip} | {sin:.2f} | {sout:.2f} | {sout-sin:.2f} | {txt} |\n")
+    for i, (clip, sin, sout, lab, txt, gap) in enumerate(VO):
+        f.write(f"| {i} | {clip} | {sin:.2f} | {sout:.2f} | {sout-sin:.2f} | +{gap:.2f}s breath | {txt} |\n")
 
 # -------- write render_reel.sh (VideoToolbox / Mac) --------
 render = f"""#!/usr/bin/env bash
@@ -187,7 +202,7 @@ TMP=04-edit/tmp_slots
 LOGO=03-music/assets/logo_mahjong_fias.png
 SITE=03-music/assets/site_mahjongatfias.png
 MUSIC={MUSIC}
-OUT=05-renders/reel_v6.mp4
+OUT=05-renders/reel_v9.mp4
 
 mkdir -p "$TMP"
 rm -f "$TMP"/slot_*.mp4 "$TMP"/vo_*.wav "$TMP"/vo_concat.wav
@@ -251,10 +266,16 @@ for i, s in enumerate(slots):
             """)
 
 # ---------- Pass 1b: extract & concat VO segments ----------
-render += "\n# ---------- VO bed: extract each line, concat ----------\n"
-for i, (clip, sin, sout, lab, txt) in enumerate(VO):
+render += "\n# ---------- VO bed: extract each line, append a breathing gap, concat ----------\n"
+for i, (clip, sin, sout, lab, txt, gap) in enumerate(VO):
     if sout > sin:
-        render += f"ffmpeg -y -v error -ss {sin} -to {sout} -i \"$SRC/{clip}\" -vn -ac 2 -ar 48000 -c:a pcm_s16le \"$TMP/vo_{i:02d}.wav\"\n"
+        # apad pads silence at the END to length = (audio duration + gap)
+        # We re-encode here (not stream copy) because apad needs a filter pipeline.
+        render += (
+            f"ffmpeg -y -v error -ss {sin} -to {sout} -i \"$SRC/{clip}\" -vn "
+            f"-af \"apad=pad_dur={gap}\" "
+            f"-ac 2 -ar 48000 -c:a pcm_s16le \"$TMP/vo_{i:02d}.wav\"\n"
+        )
 render += "(cd \"$TMP\" && ls vo_*.wav | awk '{print \"file \"$0}' > vo_concat.txt)\n"
 render += "ffmpeg -y -v error -f concat -safe 0 -i \"$TMP/vo_concat.txt\" -c copy \"$TMP/vo_concat.wav\"\n"
 
@@ -270,7 +291,7 @@ if [ -f "$MUSIC" ]; then
     -f concat -safe 0 -i "$TMP/slots_concat.txt" \\
     -i "$TMP/vo_concat.wav" \\
     -i "$MUSIC" \\
-    -filter_complex "[2:a]aloop=loop=-1:size=2e9,atrim=duration=REEL_DUR,highpass=f=250,volume=0.05[bed]; \\
+    -filter_complex "[2:a]aloop=loop=-1:size=2e9,atrim=duration=REEL_DUR,highpass=f=250,volume=0.07[bed]; \\
                      [1:a]volume=1.0[vo]; \\
                      [vo]asplit=2[vo_mix][vo_sc]; \\
                      [bed][vo_sc]sidechaincompress=threshold=0.02:ratio=20:attack=2:release=350[ducked]; \\

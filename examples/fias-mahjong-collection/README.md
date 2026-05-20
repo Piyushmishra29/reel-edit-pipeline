@@ -2,6 +2,8 @@
 
 A second example for `reel-edit-pipeline`, paired with the [Mother's Day Mahjong 2026](../mothers-day-mahjong/) event reel. This one is a **product launch reel** for the new Mahjong @ Fia's Lounge collection (tiles, mats, pushers, racks).
 
+> **For the full case-study walkthrough** — every bug, every fix, the audio-mix architecture, and the data model — see [`ITERATION_LOG.md`](ITERATION_LOG.md).
+
 Final output: a **22.63s vertical reel** with on-screen captions, an animated website scroll over the CTA, and a soft music bed ducked under host voice-over.
 
 | Spec | Value |

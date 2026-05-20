@@ -1,0 +1,11 @@
+slot,tl_in,tl_out,duration,role,file,src_in,label
+0,0.0,3.67,3.67,hook,IMG_3794.MOV,1.78,"Host IMG_3794 (synced to line, slate skipped)"
+1,3.67,6.5,2.83,reveal,IMG_3824.MOV,0.0,Blue pagoda angled — reveal (first window)
+2,6.5,8.43,1.93,tiles,IMG_3833.MOV,0.5,Tile row detail (on 'premium tiles')
+3,8.43,9.6,1.17,mats,IMG_3818.MOV,0.0,Gold dragon mat (on 'velvet mats')
+4,9.6,11.24,1.64,pushers,IMG_3819.MOV,0.5,Pusher (on 'smooth pushers')
+5,11.24,14.52,3.28,racks,IMG_3830.MOV,0.5,3-color rack showcase (on 'mahjong racks')
+6,14.52,19.21,4.69,value,IMG_3804.MOV,1.43,"Host: 'Designed to bring elegance, style and comfort in every game'"
+7,19.21,21.11,1.9,cta,IMG_3824.MOV,4.0,Blue pagoda angled — CTA opener (later window)
+8,21.11,22.74,1.63,cta,WEBSITE_SCROLL,0.0,Short site scroll: mahjongatfias.in
+9,22.74,24.24,1.5,end,LOGO_END_CARD,0.0,Brand card fade-out
