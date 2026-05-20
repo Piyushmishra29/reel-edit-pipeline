@@ -1,292 +1,168 @@
-# reel-edit-pipeline
+# Fia's Mahjong Collection — VO-driven product launch reel
+
+<p align="center"><i>A 24-second vertical reel announcing the new Mahjong @ Fia's Lounge collection — premium tiles, velvet mats, smooth pushers, and beautifully crafted racks.</i></p>
 
 <p align="center">
-  <img src="docs/screenshots/logo.png" width="200" alt="Mahjong @ Fia's Lounge — pipeline mascot"/>
-</p>
-
-<p align="center"><i>A reusable GPU-accelerated reel-builder for events, drone shoots, and any short-form video where you have lots of clips and want a beat-locked 30-ish-second cut.</i></p>
-
-<p align="center">
-  <img alt="ffmpeg" src="https://img.shields.io/badge/ffmpeg-NVENC-blue"/>
-  <img alt="python" src="https://img.shields.io/badge/python-3.10%2B-green"/>
-  <img alt="cuda" src="https://img.shields.io/badge/CUDA-13.0-orange"/>
-  <img alt="status" src="https://img.shields.io/badge/status-battle--tested-success"/>
+  <img alt="format" src="https://img.shields.io/badge/format-1080×1920-blue"/>
+  <img alt="duration" src="https://img.shields.io/badge/duration-24.23s-green"/>
+  <img alt="engine" src="https://img.shields.io/badge/engine-VO--driven-orange"/>
+  <img alt="renderer" src="https://img.shields.io/badge/renderer-h264__videotoolbox-success"/>
 </p>
 
 ---
 
 ## What this is
 
-A scriptable pipeline that turns a folder of raw event footage into a polished vertical reel, with:
+A product-launch reel for **Mahjong @ Fia's Lounge** built end-to-end on a MacBook with `ffmpeg` (VideoToolbox), `whisper-cpp`, `playwright`, and `imagemagick`. The host narrates a five-sentence script; visuals cut to her words, not to a music beat. Output ships at Instagram-spec loudness and aspect ratio.
 
-- **Beat-locked cuts** synced to music BPM (librosa)
-- **Vision-tagged classification** (food / mahjong / people / mixed) so you can exclude categories
-- **Auto-detected shaky clips** dropped via vidstabdetect feature-point analysis
-- **GPU-accelerated render** via NVENC (300+ fps on an RTX 3070 for 1080p H.264)
-- **Persistent brand watermark** + a configurable end card with fade-out
-- **DaVinci Resolve export** as a bonus — produces a `resolve_import.py` to recreate the timeline inside Resolve
+The final caption track:
 
-Built for "The Drone Agency" + Fia's Lounge. Used in production for the **Mother's Day Mahjong 2026** event reel — that project is included as the working example.
-
----
-
-## The pipeline
-
-```mermaid
-flowchart TD
-    A[📦 SD card / Zip] -->|unzip + rsync| B[01-source/ MOVs & JPGs]
-    B -->|ffprobe| C[inventory.csv<br/>per-clip duration / codec / resolution]
-    B -->|ffmpeg midpoint frame| D[02-thumbs/ 480px JPGs]
-    D -->|vision pass| E[classification.csv<br/>food / mahjong / people / mixed]
-    F[🎵 song .wav] -->|librosa beat_track| G[beat_grid.json<br/>BPM + downbeats]
-    F -->|loudnorm -16 LUFS| H[cherry_lady_30s_faded.wav]
-    C --> I{{build_shotlist.py}}
-    E --> I
-    G --> I
-    I -->|SHOTS list<br/>beat-snapped slots| J[shotlist.csv]
-    I --> K[render_reel.sh<br/>auto-generated]
-    J -->|score_shakiness.py<br/>vidstabdetect| L[shakiness_scores.csv]
-    L -->|drop clips > threshold| I
-    K -->|Pass 1: NVENC per slot| M[tmp_slots/slot_XXX.mp4]
-    M -->|Pass 2: concat + logo overlay + audio mux| N[🎬 reel_vN.mp4]
-    I --> O[resolve_import.py]
-    O -.->|optional handoff| P[🎨 DaVinci Resolve timeline]
-```
-
-## Two-pass NVENC render — why?
-
-```mermaid
-sequenceDiagram
-    participant CSV as shotlist.csv
-    participant Py as Pass 1 Python
-    participant GPU as RTX (NVENC)
-    participant FF as Pass 2 ffmpeg
-    participant Out as reel_vN.mp4
-
-    loop For each of N slots
-        CSV->>Py: row (file, src_in, tl_len)
-        Py->>GPU: ffmpeg -hwaccel cuda -ss SRC_IN -t LEN -i CLIP<br/>-vf crop+scale -c:v h264_nvenc -frames:v N
-        GPU-->>Py: slot_XXX.mp4 (1080×1920, exact frame count)
-    end
-    Py->>FF: concat.txt + logo.png + music.wav
-    FF->>GPU: -filter_complex overlay + fade + NVENC re-encode
-    GPU-->>Out: reel.mp4 (1080×1920, 30fps, +faststart)
-```
-
-A naive single-pass `-filter_complex concat=N=33` opens all 33 source videos simultaneously → OOM kill (HEVC 4K decoders are RAM-hungry). The two-pass approach keeps memory flat: one NVENC encode at a time, then stream-copy + overlay in the second pass.
-
-## Iteration timeline (this project's actual history)
-
-```mermaid
-gantt
-    title Mother's Day Mahjong 2026 reel — v1 → v9
-    dateFormat HH:mm
-    axisFormat %H:%M
-    section v1
-      First cut (33 clips, 30s)       :v1, 12:09, 4m
-    section v2
-      Fia opener + shaky swaps        :v2, 12:23, 4m
-    section v3
-      Logo overlay + split close      :v3, 12:27, 2m
-    section v4
-      Brand-card src_in tuning        :v4, 12:29, 2m
-    section v5
-      Swap IMG_3488 for IMG_3478      :v5, 12:31, 3m
-    section v6
-      Fix NVENC GOP drift bug         :v6, 12:34, 3m
-    section v7
-      Placard + wide-table opening    :v7, 12:43, 5m
-    section v8
-      Auto-drop 4 shaky clips         :v8, 12:48, 4m
-    section v9
-      Remove JPGs (zero stills)       :v9, 12:53, 4m
-```
+> The most beautiful Mahjong setup is here. ✨🀄️
+> Introducing our newest collection at Fia's Lounge —
+> premium Mahjong tiles, smooth pushers, luxurious velvet mats, and beautifully crafted Mahjong racks.
+> Designed to bring elegance, comfort, and style to every game.
+> Visit our website to explore the full collection.
 
 ---
 
-## Quick start
+## How it was built
+
+The full v1 → v9 case study — every defect, every fix, the audio-mix architecture, and the data model — lives in [`examples/fias-mahjong-collection/ITERATION_LOG.md`](examples/fias-mahjong-collection/ITERATION_LOG.md). The short version:
+
+```
+01-source/IMG_xxxx.MOV ── ffprobe ─► inventory.csv
+                       ── midpoint thumbs ─► 02-thumbs/
+                       ── manual vision pass ─► classification.csv (host / racks / mats / tiles / setup / detail)
+
+host clips ──► silencedetect @ -45dB ──► clean speech ranges (VO[])
+            ── whisper-cpp medium.en  ──► transcription mapping (which clip is which sentence)
+
+scripts/capture_site.js (Playwright + Chromium) ──► assets/site_mahjongatfias.png  (1080×7830 long screenshot)
+
+03-music/bed.wav ── yt-dlp -4 + ffmpeg trim/fade ──► music bed
+
+scripts/build_reel.py
+  ├─ VO[]      : sentence + src range + breathing gap
+  ├─ CUTS[]    : visual slots anchored to VO segments
+  ├─ CAPTIONS[]: per-role on-screen text (currently empty for v9)
+  └─ Renders   :
+        Pass 1  per-slot 1080×1920 silent MP4 (h264_videotoolbox)
+        Pass 1b extract each VO segment + apad gap, concat → vo_concat.wav
+        Pass 2  concat slots, build audio mix, mux, loudnorm → reel_vN.mp4
+```
+
+### Audio architecture
+
+Voice is the loudest element by design. Music sits underneath, ducked further when she speaks.
+
+```
+[bed] = music   ── highpass 250 Hz ── volume 0.07
+[vo]  = VO concat ── asplit ──┬── [vo_sc] (triggers ducking)
+                              └── [vo_mix] (mixed back at 8:1)
+
+[bed][vo_sc]    sidechaincompress(threshold 0.02, ratio 20, attack 2, release 350)  → [ducked]
+[ducked][vo_mix] amix(weights "1 8", duration=first, normalize=0)                   → [mix1]
+[mix1]           loudnorm(I=-16, LRA=11, TP=-1.5)                                   → [mix]
+```
+
+The 8:1 mix ratio is the safety net; the sidechain compressor is the polish. If sidechain ducking ever silently fails, voice still wins.
+
+---
+
+## Working with this branch
+
+Every file in `examples/fias-mahjong-collection/` belongs to this project:
+
+| File | What it is |
+|---|---|
+| [`README.md`](examples/fias-mahjong-collection/README.md) | End-to-end 7-step recipe (ingest, transcribe, capture site, music, edit, render) |
+| [`ITERATION_LOG.md`](examples/fias-mahjong-collection/ITERATION_LOG.md) | Detailed case study of every render iteration v1→v9 |
+| [`scripts/build_reel.py`](examples/fias-mahjong-collection/scripts/build_reel.py) | The engine — VO + CUTS + CAPTIONS → shotlist + render_reel.sh |
+| [`scripts/capture_site.js`](examples/fias-mahjong-collection/scripts/capture_site.js) | Playwright long-page screenshot of `mahjongatfias.in` |
+| [`metadata/inventory.csv`](examples/fias-mahjong-collection/metadata/inventory.csv) | Per-clip duration / codec / resolution from this shoot |
+| [`metadata/classification.csv`](examples/fias-mahjong-collection/metadata/classification.csv) | Manual vision tagging for 34 clips |
+| [`metadata/shotlist_v9.csv`](examples/fias-mahjong-collection/metadata/shotlist_v9.csv) | Final timeline locked for v9 |
+| [`metadata/shotlist_v9.md`](examples/fias-mahjong-collection/metadata/shotlist_v9.md) | Human-readable timeline + VO bed table |
+| [`assets/site_mahjongatfias.png`](examples/fias-mahjong-collection/assets/site_mahjongatfias.png) | 1080×7830 long screenshot for the CTA scroll |
+
+Footage, rendered MP4s, the music bed, and intermediate slot files are all `.gitignore`d (private + copyrighted material).
+
+---
+
+## Reproducing the render
+
+Assuming you have access to the raw footage and a Mac with the dependencies installed:
 
 ```bash
-# 1. Install deps (Ubuntu/Debian)
-sudo apt install ffmpeg imagemagick python3 python3-pip
-pip install --user librosa yt-dlp
+# Project root assumed at ~/Desktop/fias-mahjong-collection
+cd ~/Desktop/fias-mahjong-collection
 
-# 2. Confirm GPU + NVENC
-nvidia-smi
-ffmpeg -encoders 2>/dev/null | grep nvenc
-# you should see h264_nvenc, hevc_nvenc, av1_nvenc
+# 1. Inventory + thumbnails + manual classification (one-time)
+#    See examples/fias-mahjong-collection/README.md steps 2-3.
 
-# 3. Set up a project folder
-mkdir -p ~/projects/my-event/{01-source,02-thumbs,03-music/assets,04-edit,05-renders}
+# 2. Transcribe the host clips, pick speech ranges (one-time)
+#    See README step 4. Update VO[] in scripts/build_reel.py.
 
-# 4. Drop your clips into 01-source/, your logo into 03-music/assets/logo.png,
-#    and a beat-analyzed music WAV into 03-music/
+# 3. Capture the CTA site (re-run only if the site changes)
+node scripts/capture_site.js
 
-# 5. Edit pipeline/build_shotlist.py:
-#    - update ROOT path at the top
-#    - rewrite the SHOTS list for your event's beats
+# 4. Music bed (re-run only if the track changes)
+yt-dlp -4 -x --audio-format wav -o "03-music/bed_source.%(ext)s" "ytsearch1:Neiked Following the Sun"
+ffmpeg -y -ss 0 -t 22.63 -i 03-music/bed_source.wav \
+       -af "afade=t=in:d=0.8,afade=t=out:st=21.13:d=1.5" 03-music/bed.wav
 
-# 6. Build + render
-python3 pipeline/build_shotlist.py        # generates shotlist.csv + render_reel.sh
-bash 04-edit/render_reel.sh               # renders 1080×1920 reel via NVENC
-
-# 7. (Optional) Auto-drop shaky clips
-python3 pipeline/score_shakiness.py       # scores every slot, writes shakiness_scores.csv
-# Read the top of the output, add high-scoring clips to SHAKY_DROP in build_shotlist.py
-# Re-run steps 6.
+# 5. Render
+python3 scripts/build_reel.py
+bash 04-edit/render_reel.sh
+open 05-renders/reel_v9.mp4
 ```
 
----
-
-## Output gallery — Mother's Day Mahjong 2026 reel
-
-| t=0s | t=1s | t=5s |
-|:---:|:---:|:---:|
-| ![Fia opener](docs/screenshots/01-opener-fia.jpg) | ![Brand card](docs/screenshots/02-brand-card.jpg) | ![Build](docs/screenshots/03-build.jpg) |
-| Fia on mic, hero opener | MAHJONG @ FIA'S LOUNGE card | Build section |
-
-| t=11s | t=22s | t=25s |
-|:---:|:---:|:---:|
-| ![Hook](docs/screenshots/04-hook.jpg) | ![Close](docs/screenshots/05-close.jpg) | ![Logo end](docs/screenshots/06-logo-end.jpg) |
-| Hook section | Closing sequence | Logo end card (fade out) |
-
-### Source contact sheet (65 video thumbnails, 22 JPG photos)
-
-![Contact sheet](docs/screenshots/contact_sheet_small.jpg)
-
----
-
-## How the SHOTS DSL works
-
-The heart of `build_shotlist.py` is a single Python list:
-
-```python
-SHOTS = [
-    # (tl_in, tl_out, role, preferred_tags, label, force_file?, force_src_in?)
-    (b(0),  b(1),  "open",   ["people"],  "Fia on mic",            "IMG_3491.MOV"),
-    (b(3),  b(6),  "open",   ["mahjong"], "Wide table + signage",  "IMG_3488.MOV", 0.0),
-    (b(6),  b(9),  "build",  ["people"],  "Player seated",         "IMG_3479.mov"),
-    (b(9),  b(12), "build",  ["mahjong"], "Tiles shuffled",        None),   # picker chooses
-    # ...
-    (b(52), 30.0,  "close",  [],          "Logo end card fade-out", "LOGO_END_CARD"),
-]
-```
-
-Fields:
-
-| Field | Required | Description |
-|---|---|---|
-| `tl_in`, `tl_out` | yes | Timeline in/out in seconds. Use `b(N)` for beat-snapped positions. |
-| `role` | yes | Free-form label (`open`, `build`, `hook1`, `hook2`, `mid`, `close_b`, `close`). |
-| `preferred_tags` | yes | List from `classification.csv` — picker prefers these tags. |
-| `label` | yes | Human-readable note (shows up in shotlist.md). |
-| `force_file` | no | Specific file to use. `None` = greedy picker chooses. `"LOGO_END_CARD"` = sentinel for the fade end card. |
-| `force_src_in` | no | Override center-fit and start the clip at this timestamp. Useful when only part of a clip is the good take. |
-
-The picker is greedy: longest matching unused clip in the preferred tag pool. Forced files are reserved before the picker runs so they don't get re-assigned elsewhere.
+The script will fail loudly if any visual slot wants more footage than its source clip has — that sanity check was added in v2 after slot 7 silently truncated by 1 full second in v1.
 
 ---
 
 ## Skills used
 
-| Layer | Tech | Purpose |
+| Layer | Tech | Why |
 |---|---|---|
-| **Decode/encode** | `ffmpeg` 6.0+ with `--enable-libnpp --enable-nvenc --enable-cuvid` | All video I/O |
-| **GPU acceleration** | NVIDIA NVENC + NVDEC (CUDA 13.0, driver 580+) | H.264/HEVC encode at 300+ fps |
-| **Music analysis** | `librosa` 0.10+ (`beat_track`, `onset_strength`, `agglomerative`) | BPM, downbeat grid, chorus detection |
-| **Audio normalization** | `ffmpeg loudnorm` filter (EBU R128) | -16 LUFS for Instagram/TikTok spec |
-| **Source acquisition** | `yt-dlp` | Audio extraction from streaming sources |
-| **Stabilization detect** | `ffmpeg vidstabdetect` (libvidstab) | Per-clip shakiness scoring |
-| **Filter graph** | ffmpeg filter complex (`concat`, `overlay`, `zoompan`, `fade`, `crop`, `scale_cuda`, `format`) | Logo overlay + Ken Burns + fades |
-| **Container** | MP4 with `+faststart` moov atom | Progressive web playback |
-| **Vertical reframe** | Center-crop landscape→9:16 via `crop=ih*9/16:ih` | 1080×1920 from 3840×2160 sources |
-| **Frame-exact slots** | `-frames:v N` instead of `-t` | Avoids NVENC GOP drift across 30+ slots (the v6 bug fix) |
-| **End card** | `lavfi color` + `overlay` + `fade` | Black background + centered logo + 1s fade-out |
-| **Resolve handoff** | DaVinci Resolve Scripting API (`DaVinciResolveScript`) | Optional — pulls clips + music into a fresh timeline |
-| **Vision tagging** | Multimodal LLM via thumbnail review | Tags each clip as food/mahjong/people/mixed |
-| **Project layout** | `01-source/`, `02-thumbs/`, `03-music/`, `04-edit/`, `05-renders/` | Reproducible folder convention |
+| Decode/encode | `ffmpeg 8.1` + `h264_videotoolbox` | Hardware H.264 on Mac without NVIDIA |
+| Speech-range detection | `ffmpeg silencedetect` @ -45dB / 0.25s | Find clean takes inside each host clip |
+| Transcription | `whisper-cpp` medium.en | Map each take to its caption-script line |
+| Vertical reframe | `crop=ih*9/16:ih,scale=1080:1920` | 1080×1920 from 4K HEVC iPhone sources |
+| Frame-exact slots | `-frames:v N` (instead of `-t`) | Avoids drift across many slots; inventory sanity check catches truncation |
+| Caption rendering | ImageMagick PNG → ffmpeg `overlay` | Mac ffmpeg from Homebrew lacks libfreetype, so no `drawtext` |
+| CTA site capture | Playwright + Chromium, 540×960 / 2× DPR | Mobile-shaped long screenshot for vertical scroll |
+| Animated scroll | ffmpeg `crop` with time-varying `y` expression | Top-to-bottom scroll over the CTA window |
+| Music download | `yt-dlp -4` | YouTube search API requires IPv4 |
+| Audio normalization | `ffmpeg loudnorm` (EBU R128) | -16 LUFS for Instagram/TikTok |
+| Audio ducking | `asplit` + `sidechaincompress` + `amix weights="1 8"` | Voice dominant, music ducked under |
+| Container | MP4 + `+faststart` moov atom | Progressive web playback |
 
 ---
 
-## Project structure
+## Iteration timeline
 
-```
-reel-edit-pipeline/
-├── README.md                                   ← this file
-├── .gitignore                                  ← excludes footage, music, renders
-├── LICENSE
-├── pipeline/
-│   ├── build_shotlist.py                       ← THE engine: SHOTS → CSV + render_reel.sh + resolve_import.py
-│   └── score_shakiness.py                      ← per-slot vidstabdetect scorer
-└── examples/
-    └── mothers-day-mahjong/
-        ├── assets/
-        │   └── logo_mahjong_fias.png           ← brand watermark
-        ├── metadata/
-        │   ├── inventory.csv                   ← per-clip codec/resolution/duration
-        │   ├── classification.csv              ← per-clip vision tags + note
-        │   ├── exclude.txt                     ← food clips dropped from pool
-        │   ├── beat_grid.json                  ← Cherry Cherry Lady BPM + downbeats
-        │   ├── analyze.py                      ← librosa analysis script
-        │   ├── edit_notes.md                   ← BPM cheat sheet for editor
-        │   └── shakiness_scores.csv            ← per-slot vidstabdetect scores
-        └── shotlists/
-            ├── shotlist_v1.csv                 ← first cut, 33 slots, 30s
-            ├── shotlist_v2.csv                 ← Fia opener + shaky swaps
-            ├── shotlist_v3.csv                 ← logo overlay + split close
-            ├── shotlist_v4.csv                 ← brand-card src_in tuning
-            ├── shotlist_v6.csv                 ← NVENC GOP drift fix
-            ├── shotlist_v7.csv                 ← placard + wide-table opening
-            ├── shotlist_v8.csv                 ← auto-drop 4 shaky clips
-            └── shotlist_v9_final.csv           ← no JPGs (current production cut, 25.6s)
-```
+| v | Duration | Headline |
+|---|---|---|
+| v1 | 17.73s | Two phrases silently missing from VO; CTA visual truncated 1s |
+| v2 | 22.63s | Full VO restored, CTA clip swapped, inventory sanity check added |
+| v3 | 22.63s | Captions + animated website scroll + music bed |
+| v4 | 22.63s | Music down to `0.06`, HPF, harder sidechain |
+| v5 | 22.63s | Captions on, CTA split — **VO inaudible** (sidechain consumed it) |
+| v6 | 22.63s | Audio mix rebuilt with `asplit`; captions removed |
+| v7 | 24.23s | 0.4s breath after each sentence; reveal swap; hook visual on IMG_3794 |
+| v8 | 24.23s | Hook audio also from IMG_3794 (src_in 1.78) — lip-synced |
+| v9 | 24.23s | Music `0.05 → 0.07` — **locked** |
 
----
-
-## Performance reference (RTX 3070, 8 GB)
-
-| Operation | Throughput |
-|---|---|
-| H.264 NVENC 1080p (preset p4) | ~360 fps (12× realtime) |
-| HEVC NVENC 1080p (preset p7) | ~147 fps (4.9× realtime) |
-| Full 30-sec reel render (34 slots, 2-pass) | ~52 seconds end-to-end |
-| HEVC NVDEC 4K decode | well above realtime |
-| vidstabdetect scoring (33 clips) | ~25 seconds total |
-
-For the system spec story behind the optimizations, see the comments inside `pipeline/build_shotlist.py` (look for the `# v6` and `# v8` markers).
-
----
-
-## Adapting for a new event
-
-1. **Copy** `examples/mothers-day-mahjong/` → `examples/your-event/`
-2. **Replace** `assets/logo_*.png` with your event/brand mark
-3. **Replace** `metadata/` files: run the data-prep flow on your footage (ffprobe inventory, vision-tag thumbnails, music BPM analysis)
-4. **Rewrite** `build_shotlist.py`'s `SHOTS` list for your beats and your clip filenames
-5. **Update** the `ROOT` constant near the top of both scripts to point at your project root
-6. Run `python3 pipeline/build_shotlist.py && bash 04-edit/render_reel.sh`
-
-The Mother's Day Mahjong example acts as a template — copy and modify.
-
----
-
-## Known limitations
-
-- Hard-coded project root in `build_shotlist.py` — change the `ROOT = Path(...)` line per project (or env-var-ify it)
-- The greedy picker prefers length over visual quality — for hero slots, force the file explicitly
-- Vision tagging is manual today (run a multimodal LLM over the contact sheet, paste into classification.csv)
-- `vidstabdetect` scores are noisy on short (< 1 sec) clips — use motion-magnitude trends rather than absolute thresholds
-- DaVinci Resolve Free can import the timeline but blocks NVENC delivery render (Studio only)
+Full play-by-play in [`ITERATION_LOG.md`](examples/fias-mahjong-collection/ITERATION_LOG.md).
 
 ---
 
 ## Credits
 
-Built by [@Piyushmishra29](https://github.com/Piyushmishra29) for **The Drone Agency** (Bangalore, DGCA-certified drone services since 2020) and **Fia's Lounge**.
+Reel built for **Fia's Lounge** (Bengaluru), the new Mahjong collection store at `mahjongatfias.in`.
 
-Original use case: Mother's Day Mahjong tournament hosted at Fia's Lounge, 11 May 2026.
-
-Pipeline assembled with [Claude Code](https://claude.com/claude-code) (Opus 4.7, 1M context).
+Assembled with [Claude Code](https://claude.com/claude-code) (Opus 4.7, 1M context).
 
 ## License
 
