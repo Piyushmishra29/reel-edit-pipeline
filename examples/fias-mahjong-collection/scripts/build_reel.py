@@ -19,14 +19,14 @@ MUSIC = ROOT / "03-music/bed.wav"   # optional ambient bed; set None to skip
 # -------- caption text per slot role (drawn at bottom of frame) --------
 # `None` skips the caption for that slot.
 CAPTIONS = {
-    "hook":    "THE MOST BEAUTIFUL\nMAHJONG SETUP IS HERE",
-    "reveal":  "A NEW COLLECTION\nAT FIA’S LOUNGE",
-    "tiles":   "PREMIUM TILES",
-    "mats":    "VELVET MATS",
-    "pushers": "SMOOTH PUSHERS",
-    "racks":   "BEAUTIFULLY CRAFTED\nRACKS",
-    "value":   "ELEGANCE, STYLE & COMFORT\nIN EVERY GAME",
-    "cta":     "mahjongatfias.in",
+    "hook":    None,
+    "reveal":  None,
+    "tiles":   None,
+    "mats":    None,
+    "pushers": None,
+    "racks":   None,
+    "value":   None,
+    "cta":     None,
     "end":     None,
 }
 
@@ -108,8 +108,9 @@ CUTS = [
     # ===== VALUE (under VO #3, 4.29s) — host back, full sentence incl. "in every game" =====
     (3, 0.00, 4.29, "value",   "IMG_3804.MOV", 1.43, "Host: 'Designed to bring elegance, style and comfort in every game'"),
 
-    # ===== CTA (under VO #4, 3.53s) — animated website scroll of mahjongatfias.in =====
-    (4, 0.00, 3.53, "cta",     "WEBSITE_SCROLL", 0.0,  "Site scroll: mahjongatfias.in"),
+    # ===== CTA (under VO #4, 3.53s) — split: pagoda first, short site-scroll at the end =====
+    (4, 0.00, 1.90, "cta",     "IMG_3824.MOV",   0.0,  "Blue pagoda angled — CTA opener"),
+    (4, 1.90, 1.63, "cta",     "WEBSITE_SCROLL", 0.0,  "Short site scroll: mahjongatfias.in"),
 
     # ===== LOGO END CARD (post-VO, 1.5s) — silent fade =====
     (None, 0.00, 1.50, "end",  "LOGO_END_CARD", 0.0, "Brand card fade-out"),
@@ -186,7 +187,7 @@ TMP=04-edit/tmp_slots
 LOGO=03-music/assets/logo_mahjong_fias.png
 SITE=03-music/assets/site_mahjongatfias.png
 MUSIC={MUSIC}
-OUT=05-renders/reel_v3.mp4
+OUT=05-renders/reel_v6.mp4
 
 mkdir -p "$TMP"
 rm -f "$TMP"/slot_*.mp4 "$TMP"/vo_*.wav "$TMP"/vo_concat.wav
@@ -210,17 +211,17 @@ for i, s in enumerate(slots):
           -c:v h264_videotoolbox -b:v 8M -frames:v {n_frames} "$TMP/slot_{i:03d}.mp4"
         """)
     elif s["file"] == "WEBSITE_SCROLL":
-        # Animated scroll of the captured site PNG + caption overlay
-        scroll_filter = (
+        # Animated scroll of the captured site PNG (+ optional caption overlay)
+        scroll_chain = (
             f"[0:v]scale=1080:-2,"
             f"crop=w=1080:h=1920:x=0:y='min((ih-1920)*t/{s['dur']}\\,(ih-1920))':exact=1,"
-            f"fps={fps}[bg]"
+            f"fps={fps}"
         )
         if cap_path:
-            full_filter = f"{scroll_filter};[bg][1:v]overlay=0:{cap_y}:format=auto,format=yuv420p[v]"
+            full_filter = f"{scroll_chain}[bg];[bg][1:v]overlay=0:{cap_y}:format=auto,format=yuv420p[v]"
             inputs = f'-loop 1 -t {s["dur"]} -i "$SITE" -i "{cap_path}"'
         else:
-            full_filter = f"{scroll_filter},format=yuv420p[v]"
+            full_filter = f"{scroll_chain},format=yuv420p[v]"
             inputs = f'-loop 1 -t {s["dur"]} -i "$SITE"'
         render += textwrap.dedent(f"""\
         # slot {i}: {s['role']} — animated site scroll over {s['dur']:.2f}s ({s['label']})
@@ -269,9 +270,11 @@ if [ -f "$MUSIC" ]; then
     -f concat -safe 0 -i "$TMP/slots_concat.txt" \\
     -i "$TMP/vo_concat.wav" \\
     -i "$MUSIC" \\
-    -filter_complex "[2:a]aloop=loop=-1:size=2e9,atrim=duration=REEL_DUR,volume=0.18[bed]; \\
+    -filter_complex "[2:a]aloop=loop=-1:size=2e9,atrim=duration=REEL_DUR,highpass=f=250,volume=0.05[bed]; \\
                      [1:a]volume=1.0[vo]; \\
-                     [bed][vo]sidechaincompress=threshold=0.05:ratio=8:attack=5:release=200[mix1]; \\
+                     [vo]asplit=2[vo_mix][vo_sc]; \\
+                     [bed][vo_sc]sidechaincompress=threshold=0.02:ratio=20:attack=2:release=350[ducked]; \\
+                     [ducked][vo_mix]amix=inputs=2:duration=first:weights=1 8:normalize=0[mix1]; \\
                      [mix1]loudnorm=I=-16:LRA=11:TP=-1.5[mix]" \\
     -map 0:v -map "[mix]" \\
     -c:v copy -c:a aac -b:a 192k -movflags +faststart \\

@@ -219,6 +219,23 @@ The script will:
 | v1 | 17.73s | VO trim at -30dB cut "in every game" and "Visit our website"; CTA source clip too short → slot silently truncated 1s | Re-trim at -45dB, swap CTA clip to a longer one, add the inventory sanity check |
 | v2 | 22.63s | No captions, no website scroll, no music | Add caption PNG generation + overlay; add `WEBSITE_SCROLL` sentinel; add ducked music bed |
 | v3 | 22.63s | Music still slightly competes with VO | _(tune `volume=0.18` lower)_ |
+| v4 | 22.63s | Music down to `0.06`, HPF 200 Hz, sidechain ratio 8→20 | Still slightly too present |
+| v5 | 22.63s | Captions on, music `0.03`, sidechain ratio capped at 20, CTA split (1.90s pagoda + 1.63s site scroll) | **VO not in output at all** — `sidechaincompress` was *consuming* the VO as its trigger, output had only ducked music |
+| v6 | 22.63s | Captions removed; audio mix rebuilt: `asplit` VO into two streams (one triggers ducking, one mixes back at weight `8:1`); `WEBSITE_SCROLL` filter chain bug fixed for no-caption case | Locked |
+
+### Final audio mix (v6)
+
+```
+[bed] = music   → highpass 250 Hz → volume 0.05
+[vo]  = VO concat → asplit ─┬─[vo_sc]→ used only as sidechain trigger
+                             └─[vo_mix]→ mixed at weight 8 (vs music 1)
+
+[bed][vo_sc] → sidechaincompress (threshold 0.02, ratio 20, attack 2, release 350) → [ducked]
+[ducked][vo_mix] → amix weights "1 8" duration=first normalize=0 → [mix1]
+[mix1] → loudnorm I=-16 LRA=11 TP=-1.5 → [mix]   # Instagram spec
+```
+
+Voice is the loudest element by design — the `8:1` mix weight is the safety net, the sidechain ducking is the polish.
 
 ## Known gotchas
 
