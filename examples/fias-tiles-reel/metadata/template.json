@@ -1,17 +1,25 @@
 {
   "source_template": "Video-533.mp4",
   "note": "Reference trend clip. Borrowed audio + private footage are gitignored; this repo stores only the recipe.",
-  "output": { "width": 720, "height": 1280, "fps": 30, "duration": 7.729 },
+  "reference": {
+    "video_duration": 7.600,
+    "video_frames": 228,
+    "audio_container_duration": 7.729,
+    "audio_decodable_duration": 7.641,
+    "audio_note": "Container says 7.729s; ~0.088s of that is AAC priming trimmed on decode. Real audio content is 7.641s."
+  },
+  "output": { "width": 720, "height": 1280, "fps": 30, "frames": 229, "duration": 7.633 },
   "audio": {
     "extracted_to": "assets/template_audio.wav",
     "extract_script": "metadata/extract_audio.sh",
-    "duration": 7.64
+    "duration": 7.641
   },
   "slots": [
-    { "slot": 1, "start": 0.000, "end": 2.033, "duration": 2.033 },
-    { "slot": 2, "start": 2.033, "end": 3.967, "duration": 1.934 },
-    { "slot": 3, "start": 3.967, "end": 5.633, "duration": 1.666 },
-    { "slot": 4, "start": 5.633, "end": 7.729, "duration": 2.096 }
+    { "slot": 1, "start_frame": 0,   "frames": 61, "start_s": 0.000, "end_s": 2.033 },
+    { "slot": 2, "start_frame": 61,  "frames": 58, "start_s": 2.033, "end_s": 3.967 },
+    { "slot": 3, "start_frame": 119, "frames": 50, "start_s": 3.967, "end_s": 5.633 },
+    { "slot": 4, "start_frame": 169, "frames": 60, "start_s": 5.633, "end_s": 7.633 }
   ],
-  "slot_detection": "ffmpeg scene-cut detection (gt(scene,0.3)) on Video-533.mp4"
+  "slot_detection": "ffmpeg scene-cut detection (gt(scene,0.3)) on Video-533.mp4; boundaries snapped to exact 30fps frames (61/119/169). Slot 4 sized to the real audio length, not the reference video's 228th frame.",
+  "render_note": "Slots driven by exact -frames:v counts to avoid fps-rounding drift. No -shortest (it truncates video early via AAC priming accounting)."
 }

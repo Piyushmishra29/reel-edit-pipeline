@@ -38,7 +38,7 @@ bash metadata/extract_audio.sh ~/Downloads/Video-533.mp4
 
 # 2. build (CPU x264 locally; USE_NVENC=1 on the RTX box)
 SRC_DIR="$HOME/Downloads/Tiles reel June 26 " bash build_template_reel.sh
-# -> reel_v1.mp4  (720×1280, 30fps, 7.64s)
+# -> reel_v1.mp4  (720×1280, 30fps, 229 frames / 7.63s video over 7.64s audio)
 ```
 
 ## Notes

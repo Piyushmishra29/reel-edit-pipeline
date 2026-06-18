@@ -29,15 +29,18 @@ CONCAT="$TMP/concat.txt"; : > "$CONCAT"
 
 echo "=== Building slots ==="
 # Skip CSV header, read each slot row.
-tail -n +2 "$SHOTLIST" | while IFS=, read -r slot file src_in tl_len motion label; do
+# Slots are driven by exact FRAME counts (not float seconds) so cuts land on the
+# template grid with no fps-rounding drift. Frame counts: 61/58/50/60 = 229 = 7.633s,
+# matching the real (priming-trimmed) audio length of 7.641s.
+tail -n +2 "$SHOTLIST" | while IFS=, read -r slot file src_in frames tl_len motion label; do
   [ -z "${slot:-}" ] && continue
   in_clip="$SRC_DIR/$file"
   out_slot="$TMP/slot_$(printf '%02d' "$slot").mp4"
-  echo "  slot $slot: $file  in=$src_in len=$tl_len  ($label)"
+  echo "  slot $slot: $file  in=$src_in frames=$frames (~${tl_len}s)  ($label)"
   ffmpeg -nostdin -y -hide_banner -loglevel error \
-    -ss "$src_in" -t "$tl_len" -i "$in_clip" \
+    -ss "$src_in" -i "$in_clip" \
     -vf "scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H},setsar=1,fps=${FPS}" \
-    -an "${VENC[@]}" -pix_fmt yuv420p -video_track_timescale 30000 "$out_slot"
+    -frames:v "$frames" -an "${VENC[@]}" -pix_fmt yuv420p -video_track_timescale 30000 "$out_slot"
   echo "file '$out_slot'" >> "$CONCAT"
 done
 
@@ -46,7 +49,7 @@ ffmpeg -y -hide_banner -loglevel error \
   -f concat -safe 0 -i "$CONCAT" \
   -i "$AUDIO" \
   -map 0:v:0 -map 1:a:0 \
-  -c:v copy -c:a aac -b:a 192k -shortest \
+  -c:v copy -c:a aac -b:a 192k \
   "$OUT"
 
 echo "=== Done: $OUT ==="
