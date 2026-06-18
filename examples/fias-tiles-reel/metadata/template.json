@@ -1,0 +1,17 @@
+{
+  "source_template": "Video-533.mp4",
+  "note": "Reference trend clip. Borrowed audio + private footage are gitignored; this repo stores only the recipe.",
+  "output": { "width": 720, "height": 1280, "fps": 30, "duration": 7.729 },
+  "audio": {
+    "extracted_to": "assets/template_audio.wav",
+    "extract_script": "metadata/extract_audio.sh",
+    "duration": 7.64
+  },
+  "slots": [
+    { "slot": 1, "start": 0.000, "end": 2.033, "duration": 2.033 },
+    { "slot": 2, "start": 2.033, "end": 3.967, "duration": 1.934 },
+    { "slot": 3, "start": 3.967, "end": 5.633, "duration": 1.666 },
+    { "slot": 4, "start": 5.633, "end": 7.729, "duration": 2.096 }
+  ],
+  "slot_detection": "ffmpeg scene-cut detection (gt(scene,0.3)) on Video-533.mp4"
+}

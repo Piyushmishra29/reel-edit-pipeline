@@ -1,0 +1,5 @@
+slot,file,src_in,tl_len,motion_score,label
+1,IMG_4648.MOV,0.5,2.033,3.206,heart-hands-smile
+2,IMG_4657.MOV,0.5,1.934,3.233,finger-gesture
+3,IMG_4677.MOV,0.5,1.666,3.343,mural-gesture
+4,IMG_4637.MOV,0.5,2.096,3.545,fist-over-tiles
