@@ -14,33 +14,33 @@ The eye locks on the still anchor, so only the tile changes → it materializes.
 If the anchor (hand/tile) is **moving** across the cut, it reads as a jump, not an
 appear. This is the single thing that makes or breaks every reveal.
 
-## Shipped cut — 2 reveals (both verified clean)
+## Shipped cut — 3 reveals (all verified clean)
 
 | Reveal | Location | Empty → Tile | Anchor | Source |
 |--------|----------|--------------|--------|--------|
 | 1 | restaurant window | empty pinch → tile in pinch | hand | IMG_4657 (0.95s→3.15s) |
 | 2 | mural | empty dragon table → tiles on table | table | IMG_4677 (1.50s→4.30s) |
+| 3 | carved wall | empty extended pinch → tile in pinch | hand | IMG_4871 (3.00s→3.60s) |
 
 Then the full-table beat holds ~0.6s and the music fades. Output: 720×1280, 30fps,
-~3.8s. EDL in `shotlists/shotlist_matchcut_2reveal.csv`; build with
+~5.2s (156 frames). EDL in `shotlists/shotlist_matchcut_3reveal.csv`; build with
 `build_matchcut_reel.sh`.
 
-## Why reveal 3 was cut (footage limitation, not editing)
+## Reveal 3 — what made the reshoot land
 
-Three different clips were shot/tried for a 3rd reveal — IMG_4671 (standing),
-IMG_4666 and IMG_4667 (carved wall). **None works**, for the same reason, proven
-frame-by-frame:
+Earlier reveal-3 attempts all failed for one reason, proven frame-by-frame: the
+hand was **in motion** during the empty state (reaching, rising, pointing) and she
+was **already holding the tile** by the time the hand was presentable — so there
+was never a moment where an empty hand and a tile-in-hand sat **still in the same
+spot**. Tried and rejected: IMG_4671 (standing), IMG_4666, IMG_4667 (carved wall).
 
-- In all three, her **hand is in motion** during the empty state — reaching,
-  rising, pointing — and she's **already holding the tile** by the time her hand is
-  presentable. There is no moment where an empty hand and a tile-in-hand sit
-  **still in the same spot**.
-- Reveal 1 works precisely because in IMG_4657 her pinch is **motionless** at
-  chest-center, empty then with the tile.
-- Reframing can move position but cannot freeze a moving hand or turn an open/
-  pointing gesture into a matching pinch — so the appear can't be faked in the edit.
+The locked reshoot **IMG_4871.MOV** fixes it. She holds an **empty extended pinch
+still** (~3.00–3.50s), then the tile **materializes in that same pinch** at ~3.57s
+and is held steady (~3.60–4.35s). The hand does not move across the cut, so it
+reads as an appear — exactly like reveal 1. The cut sits at output frame 112
+(3.733s): empty hand → tile-in-hand, identical position.
 
-### Reshoot recipe for a clean reveal 3
+### Reshoot recipe that worked (keep for any future reveal)
 1. Phone on a tripod / propped — **locked, not handheld**.
 2. Hold an **empty pinch** (thumb + finger) **completely still** at chest center ~2s.
 3. Without moving the hand, place the tile into that **same pinch**; hold ~2s.

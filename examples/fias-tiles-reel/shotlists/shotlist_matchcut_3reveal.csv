@@ -3,4 +3,6 @@ reveal,segment,file,src_in,frames,state,anchor,location
 1,1b,IMG_4657.MOV,3.15,26,tile in pinch,hand,restaurant window
 2,2a,IMG_4677.MOV,1.50,22,empty dragon table,table,mural
 2,2b,IMG_4677.MOV,4.30,26,tiles on table,table,mural
-finale,hold,IMG_4677.MOV,,18,hold last frame (clone 0.6s),table,mural
+3,3a,IMG_4871.MOV,3.00,16,empty extended pinch (held still),hand,carved wall
+3,3b,IMG_4871.MOV,3.60,26,tile in pinch,hand,carved wall
+finale,hold,IMG_4871.MOV,,18,hold last frame (clone 0.6s),hand,carved wall
