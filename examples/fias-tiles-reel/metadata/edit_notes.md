@@ -1,69 +1,56 @@
-# Fia's Tiles Reel — Edit Notes
+# Fia's Tiles Reel — Edit Notes (match-cut "appear" reel)
 
-Exact remake of the reference clip `Video-533.mp4` (a vertical trend template).
-The reference clip *is* the beat grid, so no librosa/BPM pass — cut points come
-straight from the reference's scene cuts.
+Recreation of the reference `Video-533.mp4`: a **match-cut reel** where a mahjong
+tile *materializes* in a fixed frame. On each cut the location/look changes while
+an **anchor stays locked in place**, so the tile appears to pop into existence.
+Audio is the borrowed sound from the reference (gitignored), footage audio muted.
 
-## Template (from Video-533.mp4)
+## The mechanic (what makes a reveal "land")
 
-- 720×1280, 30 fps, 4 hard-cut slots (subject changes pose/location at each cut —
-  verified by frame inspection, it's a genuine 4-shot transition template).
-- Scene cuts detected with `ffmpeg select='gt(scene,0.3)'`: 2.033 / 3.967 / 5.633 s.
-- Boundaries snapped to exact 30 fps frames so cuts land with zero drift:
-  frame 0 / 61 / 119 / 169.
+A reveal is a hard cut between an **empty** state and a **tile-present** state,
+where the anchor is in the **identical position and motionless** before and after.
+The eye locks on the still anchor, so only the tile changes → it materializes.
 
-| Slot | Start frame | Frames | Start–End (s)   |
-|------|-------------|--------|-----------------|
-| 1    | 0           | 61     | 0.000 – 2.033   |
-| 2    | 61          | 58     | 2.033 – 3.967   |
-| 3    | 119         | 50     | 3.967 – 5.633   |
-| 4    | 169         | 60     | 5.633 – 7.633   |
+If the anchor (hand/tile) is **moving** across the cut, it reads as a jump, not an
+appear. This is the single thing that makes or breaks every reveal.
 
-Total **229 frames = 7.633 s**.
+## Shipped cut — 2 reveals (both verified clean)
 
-### Duration facts (audited)
+| Reveal | Location | Empty → Tile | Anchor | Source |
+|--------|----------|--------------|--------|--------|
+| 1 | restaurant window | empty pinch → tile in pinch | hand | IMG_4657 (0.95s→3.15s) |
+| 2 | mural | empty dragon table → tiles on table | table | IMG_4677 (1.50s→4.30s) |
 
-- Reference **video** stream: 7.600 s / 228 frames.
-- Reference **audio**: container reports 7.729 s, but ~0.088 s of that is AAC
-  priming trimmed on decode — real decodable audio is **7.641 s**.
-- So slot 4 is sized to the audio (60 frames, ending 7.633 s) rather than the
-  reference video's 228th frame. Output: video 7.633 s, audio 7.641 s.
+Then the full-table beat holds ~0.6s and the music fades. Output: 720×1280, 30fps,
+~3.8s. EDL in `shotlists/shotlist_matchcut_2reveal.csv`; build with
+`build_matchcut_reel.sh`.
 
-Audio: extracted verbatim from the reference (`metadata/extract_audio.sh`),
-loudness as-is, 7.641 s. Borrowed sound — gitignored.
+## Why reveal 3 was cut (footage limitation, not editing)
 
-## Clip selection — 8 candidates, 4 slots
+Three different clips were shot/tried for a 3rd reveal — IMG_4671 (standing),
+IMG_4666 and IMG_4667 (carved wall). **None works**, for the same reason, proven
+frame-by-frame:
 
-vidstabdetect was unavailable locally (brew ffmpeg 8.1 built without libvidstab),
-so steadiness was ranked with a **frame-difference motion proxy**: mean luma of
-`tblend=difference` frames over a 2.1 s window at 480p. Lower = steadier.
+- In all three, her **hand is in motion** during the empty state — reaching,
+  rising, pointing — and she's **already holding the tile** by the time her hand is
+  presentable. There is no moment where an empty hand and a tile-in-hand sit
+  **still in the same spot**.
+- Reveal 1 works precisely because in IMG_4657 her pinch is **motionless** at
+  chest-center, empty then with the tile.
+- Reframing can move position but cannot freeze a moving hand or turn an open/
+  pointing gesture into a matching pinch — so the appear can't be faked in the edit.
 
-| Clip         | Motion | Picked |
-|--------------|--------|--------|
-| IMG_4648.MOV | 3.206  | ✅ slot 1 |
-| IMG_4657.MOV | 3.233  | ✅ slot 2 |
-| IMG_4677.MOV | 3.343  | ✅ slot 3 |
-| IMG_4637.MOV | 3.545  | ✅ slot 4 |
-| IMG_4651.MOV | 3.613  | — |
-| IMG_4652.MOV | 3.618  | — |
-| IMG_4639.MOV | 4.300  | — |
-| IMG_4671.MOV | 10.420 | ❌ clearly shaky |
+### Reshoot recipe for a clean reveal 3
+1. Phone on a tripod / propped — **locked, not handheld**.
+2. Hold an **empty pinch** (thumb + finger) **completely still** at chest center ~2s.
+3. Without moving the hand, place the tile into that **same pinch**; hold ~2s.
+4. Same framing/outfit, hand never moves → it match-cuts as cleanly as reveal 1.
 
-Scores in `metadata/motion_scores.csv`. Slot order = steadiness order; reorder
-in `shotlists/shotlist_template_v1.csv` to taste.
+## Per-segment encode
 
-## Per-slot encode
-
-Each clip trimmed from `src_in` 0.5 s (skips the grab), then
-`scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280` + `fps=30`.
-Source clips are 9:16 already, so the crop is a no-op — no content lost.
-iPhone clips carry −90 rotation which ffmpeg auto-applies on decode, so no manual
-transpose. CPU `libx264 -crf 18` locally; `USE_NVENC=1` for the RTX box.
-
-Two gotchas found during audit and fixed:
-- **Slots are sized by `-frames:v` (exact frame counts), not float `-t` seconds.**
-  Float durations + the `fps` filter round each slot down, drifting the cuts off
-  the grid (first build was 226 frames / 7.53 s instead of 229).
-- **No `-shortest` on the final mux.** With AAC audio, `-shortest` stops the mux
-  early on a priming-padding boundary and truncated the video to 7.53 s. Dropping
-  it gives the full 229-frame video.
+Each segment: trim from `src_in`, `scale=720:1280:force_original_aspect_ratio=
+increase,crop=720:1280` + `fps=30`. Source clips are 9:16 already so the crop is a
+no-op; iPhone −90 rotation is auto-applied on decode. Slots driven by exact
+`-frames:v` counts (no fps-rounding drift). CPU `libx264 -crf 18` locally;
+`USE_NVENC=1` for the RTX box. Footage audio dropped (`-an`); only the borrowed
+template audio is muxed, with a 0.5s fade-out.
